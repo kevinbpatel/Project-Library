@@ -1,72 +1,72 @@
 const myLibrary = [];
+class Book { 
+    constructor(title, author, pages, read) {
+        this.title = title;
+        this.author = author;
+        this.pages = pages;
+        this.read = read;
+    }
 
-function Book(title, author, pages, read) {
-  this.title = title;
-  this.author = author;
-  this.pages = pages;
-  this.read = read;
+    createCard = () => { 
+        const cardHTML = `
+        <div class="card">
+            <button class="delete-button"><img src="images/close.svg"></button>
+            <div class="book-header">
+                <div class="title">${this.title}</div>
+                <div class="author">${this.author}</div>
+                <div class="pages">${this.pages} pp.</div>
+            </div>
+            <input type="checkbox" class="read-check"></input>
+        </div>
+        `; 
+
+        document.querySelector(".card-container").insertAdjacentHTML("beforeend", cardHTML);
+
+        const newCard = document.querySelector(".card-container").lastElementChild;
+        const checkBox = newCard.querySelector(".read-check");
+        const bookIndex = myLibrary.findIndex((book) => book.title === this.title);
+
+        if (this.read === true) { 
+            checkBox.checked = true;
+        } else { 
+            checkBox.checked = false;
+        }
+        
+        const deleteButton = newCard.querySelector(".delete-button");
+
+        deleteButton.addEventListener("click", e => { 
+            const card = e.target.closest(".card");
+            const title = card.querySelector(".title").textContent;
+        
+            console.log(title);
+        
+            card.remove()
+            
+            myLibrary.splice(bookIndex, 1);
+            displayBooks();
+        
+        }); 
+
+        checkBox.addEventListener("change", () => {
+            if (checkBox.checked) { 
+                myLibrary[bookIndex].read = true;
+            } else { 
+                myLibrary[bookIndex].read = false;
+            }
+        });
+    }
+    
 }
 
 function addBookToLibrary(book) {
     myLibrary.push(book);
 }
 
-const createCard = (title, author, pages, read) => {
-    const cardHTML = `
-      <div class="card">
-        <button class="delete-button"><img src="images/close.svg"></button>
-        <div class="book-header">
-            <div class="title">${title}</div>
-            <div class="author">${author}</div>
-            <div class="pages">${pages} pp.</div>
-        </div>
-        <input type="checkbox" class="read-check"></input>
-      </div>
-    `; 
-
-    document.querySelector(".card-container").insertAdjacentHTML("beforeend", cardHTML);
-
-    const newCard = document.querySelector(".card-container").lastElementChild;
-    const checkBox = newCard.querySelector(".read-check");
-    const bookIndex = myLibrary.findIndex((book) => book.title === title);
-
-    if (read === true) { 
-        checkBox.checked = true;
-    } else { 
-        checkBox.checked = false;
-    }
-    
-    const deleteButton = newCard.querySelector(".delete-button");
-
-    deleteButton.addEventListener("click", e => { 
-        const card = e.target.closest(".card");
-        const title = card.querySelector(".title").textContent;
-    
-        console.log(title);
-    
-        card.remove()
-        
-        myLibrary.splice(bookIndex, 1);
-        displayBooks();
-    
-    }); 
-
-    checkBox.addEventListener("change", () => {
-        if (checkBox.checked) { 
-            myLibrary[bookIndex].read = true;
-        } else { 
-            myLibrary[bookIndex].read = false;
-        }
-    });
-
-};
-
-
 function displayBooks() { 
 
     document.querySelector(".card-container").innerHTML = "";   
     for (let i = 0; i < myLibrary.length; i++) { 
-        createCard(myLibrary[i].title, myLibrary[i].author, myLibrary[i].pages, myLibrary[i].read);
+        myLibrary[i].createCard(); // remember to put () on methods!
     }
 }
 
@@ -92,7 +92,7 @@ addBookForm.addEventListener("click", e => {
     const pages = document.getElementById("pages").value;
     const read = document.getElementById("read").checked;
 
-    const newBook = {title, author, pages, read};
+    const newBook = new Book(title, author, pages, read);
     addBookToLibrary(newBook);
 
     displayBooks();
